@@ -7,10 +7,9 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // ============================================
-// 🔑 SARI API KEYS
+// 🔑 SAARI 10 API KEYS
 // ============================================
 const API_KEYS = [
   'csk-fhyxhr6dxx9twymw543nkjr3x6ynwvj8r8phtvpxwdnkp5cx',
@@ -26,36 +25,49 @@ const API_KEYS = [
 ];
 
 // ============================================
-// 👸 AI PERSONALITY (MANO AI Style)
+// 🤖 AI RESPONSE FUNCTION
 // ============================================
-const AI_SYSTEM = `Tu MANO AI hai - SARDAR RDX ki professional AI assistant.
-Tera kaam:
-- Code commands banana
-- Style change karna
-- Code debug karna
-- General questions answer karna
+async function getAIResponse(question) {
+  for (let i = 0; i < API_KEYS.length; i++) {
+    try {
+      const url = `https://api.kraza.qzz.io/ai/customai?q=${encodeURIComponent(question)}&apikey=${API_KEYS[i]}`;
+      const response = await axios.get(url, { timeout: 10000 });
+      
+      if (response.data && response.data.status === true && response.data.response) {
+        let reply = response.data.response;
+        reply = reply.replace(/assistant:/gi, "").replace(/AI:/gi, "").trim();
+        if (reply && reply.length > 5) {
+          return reply;
+        }
+      }
+    } catch(e) {
+      console.log(`API key ${i+1} failed, trying next...`);
+    }
+  }
+  return getFallbackReply();
+}
 
-Rules:
-- Sirf 2-3 lines mein reply de
-- Professional tone mein
-- Helpful aur friendly
-- Code blocks use kar sakti hai
-
-Examples:
-User: "command banao" → "Ye lo aapka command: !play [song name]"
-User: "style change" → "Style updated! Konsa color chahiye?"
-User: "debug" → "Error line 15 mein hai, ye fix karo:"`;
+function getFallbackReply() {
+  const replies = [
+    "Assalamu Alaikum! Main MANO AI hoon. Kaisay madad kar sakti hoon? 🤲",
+    "Allah aapko khush rakhe! Koi sawaal poocho? 🌟",
+    "Main yahan hoon aapki help ke liye! Batao kya chahiye? 💚",
+    "SARDAR RDX ki AI hoon main! Koi command chahiye? 🚀"
+  ];
+  return replies[Math.floor(Math.random() * replies.length)];
+}
 
 // ============================================
-// 🌐 PROFESSIONAL WEBSITE UI
+// 🌐 WEBSITE UI
 // ============================================
 app.get("/", (req, res) => {
-  res.send(`<!DOCTYPE html>
-<html lang="en">
+  res.send(`
+<!DOCTYPE html>
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANO AI - Professional Assistant</title>
+    <title>MANO AI - SARDAR RDX ki AI Assistant</title>
     <style>
         * {
             margin: 0;
@@ -64,8 +76,8 @@ app.get("/", (req, res) => {
         }
         
         body {
-            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -73,27 +85,27 @@ app.get("/", (req, res) => {
             padding: 20px;
         }
         
-        .app-container {
+        .app {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1000px;
             height: 95vh;
-            background: #0f0f1e;
-            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
             display: flex;
             overflow: hidden;
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         /* Sidebar */
         .sidebar {
-            width: 280px;
-            background: rgba(30, 30, 46, 0.95);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(255,255,255,0.1);
+            width: 260px;
+            background: rgba(0,0,0,0.4);
             padding: 20px;
             display: flex;
             flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
         
         .logo {
@@ -102,7 +114,7 @@ app.get("/", (req, res) => {
         }
         
         .logo h2 {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -112,61 +124,62 @@ app.get("/", (req, res) => {
         .status {
             display: flex;
             align-items: center;
-            gap: 8px;
             justify-content: center;
-            margin-top: 5px;
-            color: #4caf50;
+            gap: 8px;
+            margin-top: 8px;
             font-size: 12px;
+            color: #4caf50;
         }
         
-        .status-dot {
+        .dot {
             width: 8px;
             height: 8px;
             background: #4caf50;
             border-radius: 50%;
-            animation: pulse 2s infinite;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
         
         .features {
             flex: 1;
-            margin-top: 30px;
+            margin-top: 20px;
         }
         
-        .feature-item {
-            padding: 12px;
+        .feature {
+            padding: 12px 15px;
             margin: 8px 0;
             background: rgba(255,255,255,0.05);
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
             color: #ccc;
+            font-size: 14px;
         }
         
-        .feature-item:hover {
-            background: rgba(102,126,234,0.3);
+        .feature:hover {
+            background: rgba(245,87,108,0.3);
             transform: translateX(5px);
-        }
-        
-        .feature-item.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
         
-        .owner-info {
+        .owner {
             margin-top: auto;
             padding-top: 20px;
             border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
             font-size: 12px;
             color: #888;
-            text-align: center;
         }
         
-        /* Main Chat Area */
-        .main-chat {
+        /* Main Chat */
+        .main {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #1a1a2e;
         }
         
         .chat-header {
@@ -177,12 +190,13 @@ app.get("/", (req, res) => {
         
         .chat-header h3 {
             color: white;
-            margin-bottom: 5px;
+            font-size: 18px;
         }
         
         .chat-header p {
-            color: #888;
+            color: #aaa;
             font-size: 12px;
+            margin-top: 5px;
         }
         
         .messages {
@@ -202,7 +216,7 @@ app.get("/", (req, res) => {
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(15px);
             }
             to {
                 opacity: 1;
@@ -210,44 +224,32 @@ app.get("/", (req, res) => {
             }
         }
         
-        .user-message {
+        .user-msg {
             justify-content: flex-end;
         }
         
-        .bot-message {
+        .bot-msg {
             justify-content: flex-start;
         }
         
-        .message-content {
-            max-width: 70%;
+        .bubble {
+            max-width: 75%;
             padding: 12px 18px;
-            border-radius: 18px;
-            word-wrap: break-word;
+            border-radius: 20px;
             line-height: 1.5;
+            word-wrap: break-word;
         }
         
-        .user-message .message-content {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .user-msg .bubble {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
             color: white;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 5px;
         }
         
-        .bot-message .message-content {
+        .bot-msg .bubble {
             background: rgba(255,255,255,0.1);
             color: #e0e0e0;
-            border-bottom-left-radius: 4px;
-        }
-        
-        .message-content pre {
-            background: #0f0f1e;
-            padding: 10px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 8px 0;
-        }
-        
-        .message-content code {
-            font-family: 'Courier New', monospace;
+            border-bottom-left-radius: 5px;
         }
         
         .typing-indicator {
@@ -255,7 +257,7 @@ app.get("/", (req, res) => {
             padding: 10px 20px;
             gap: 10px;
             align-items: center;
-            color: #888;
+            color: #aaa;
         }
         
         .typing-indicator.active {
@@ -270,17 +272,17 @@ app.get("/", (req, res) => {
         .typing-dots span {
             width: 6px;
             height: 6px;
-            background: #667eea;
+            background: #f5576c;
             border-radius: 50%;
             animation: bounce 1.4s infinite;
         }
         
         @keyframes bounce {
-            0%, 60%, 100% { transform: translateY(0); }
+            0%,60%,100% { transform: translateY(0); }
             30% { transform: translateY(-8px); }
         }
         
-        .input-area {
+        .input-container {
             padding: 20px;
             background: rgba(0,0,0,0.3);
             border-top: 1px solid rgba(255,255,255,0.1);
@@ -290,7 +292,7 @@ app.get("/", (req, res) => {
             display: flex;
             gap: 10px;
             background: rgba(255,255,255,0.05);
-            border-radius: 25px;
+            border-radius: 30px;
             padding: 5px;
         }
         
@@ -309,254 +311,207 @@ app.get("/", (req, res) => {
         }
         
         .input-wrapper button {
-            padding: 8px 25px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 8px 28px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
             border: none;
-            border-radius: 25px;
+            border-radius: 30px;
             color: white;
             cursor: pointer;
-            transition: all 0.3s;
+            font-weight: bold;
+            transition: transform 0.2s;
         }
         
         .input-wrapper button:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
         
         .shortcuts {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            padding: 0 10px;
-            font-size: 11px;
-            color: #666;
+            gap: 15px;
+            padding: 8px 12px;
+            font-size: 10px;
+            color: #555;
         }
         
         @media (max-width: 768px) {
             .sidebar {
                 display: none;
             }
-            .message-content {
+            .bubble {
                 max-width: 85%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="logo">
-                <h2>⚡ MANO AI</h2>
-                <div class="status">
-                    <span class="status-dot"></span>
-                    <span>Online · Female AI Assistant</span>
-                </div>
-            </div>
-            
-            <div class="features">
-                <div class="feature-item" onclick="setPrompt('command')">
-                    💻 Code Generator
-                </div>
-                <div class="feature-item" onclick="setPrompt('style')">
-                    🎨 Style Changer
-                </div>
-                <div class="feature-item" onclick="setPrompt('debug')">
-                    🐛 Debug Helper
-                </div>
-                <div class="feature-item" onclick="setPrompt('general')">
-                    💬 General Assistant
-                </div>
-            </div>
-            
-            <div class="owner-info">
-                <div>👑 Owner: SARDAR RDX</div>
-                <div style="font-size: 10px; margin-top: 5px;">Version 2.0 | Powered by AI</div>
+<div class="app">
+    <div class="sidebar">
+        <div class="logo">
+            <h2>⚡ MANO AI</h2>
+            <div class="status">
+                <span class="dot"></span>
+                <span>Online · Female AI</span>
             </div>
         </div>
         
-        <!-- Main Chat -->
-        <div class="main-chat">
-            <div class="chat-header">
-                <h3>🤖 MANO AI Assistant</h3>
-                <p>Your expert AI assistant for commands, code & everything!</p>
-            </div>
-            
-            <div class="messages" id="messages">
-                <div class="message bot-message">
-                    <div class="message-content">
-                        <strong>Assalamu Alaikum wa Rahmatullahi wa Barakatuh! 🌹</strong><br><br>
-                        Main <strong>MANO AI</strong> hoon — <strong>SARDAR RDX</strong> ki taraf se aapki expert AI assistant! 🌟<br><br>
-                        Aap mujhse kuch bhi pooch sakti/sakte hain — command banwana ho, style change karwani ho, code debug karna ho, ya koi bhi general sawal ho — main hamesha help karne ke liye yahan hoon! 🚀<br><br>
-                        Batao, aaj main aapki kya madad kar sakti hoon? 🚀
-                    </div>
-                </div>
-            </div>
-            
-            <div class="typing-indicator" id="typingIndicator">
-                <span>MANO AI is thinking</span>
-                <div class="typing-dots">
-                    <span>.</span><span>.</span><span>.</span>
-                </div>
-            </div>
-            
-            <div class="input-area">
-                <div class="input-wrapper">
-                    <input type="text" id="userInput" placeholder="Kuch bhi poochho — command edit, style change, code..." onkeypress="handleEnter(event)">
-                    <button onclick="sendMessage()">Send ➤</button>
-                </div>
-                <div class="shortcuts">
-                    <span>⏎ Enter = Send</span>
-                    <span>⇧ Shift+Enter = new line</span>
-                </div>
-            </div>
+        <div class="features">
+            <div class="feature" onclick="setPrompt('code')">💻 Code Generator</div>
+            <div class="feature" onclick="setPrompt('style')">🎨 Style Changer</div>
+            <div class="feature" onclick="setPrompt('debug')">🐛 Debug Helper</div>
+            <div class="feature" onclick="setPrompt('general')">💬 General Assistant</div>
+            <div class="feature" onclick="setPrompt('command')">🤖 Bot Command</div>
+        </div>
+        
+        <div class="owner">
+            <div>👑 Owner: SARDAR RDX</div>
+            <div style="font-size: 10px; margin-top: 5px;">Powered by 10x API</div>
         </div>
     </div>
     
-    <script>
-        const messagesDiv = document.getElementById('messages');
-        const userInput = document.getElementById('userInput');
-        const typingIndicator = document.getElementById('typingIndicator');
+    <div class="main">
+        <div class="chat-header">
+            <h3>🤖 MANO AI Assistant</h3>
+            <p>Your personal AI for commands, code & everything!</p>
+        </div>
         
-        function setPrompt(type) {
-            const prompts = {
-                command: "Mujhe ek Facebook bot command chahiye jo !play song naam se gaana chala sake",
-                style: "Mere bot ka style change karna hai, dark theme with purple gradient",
-                debug: "Mera code error de raha hai, help karo: console.log('hello'",
-                general: "Mujhe ek AI assistant banana hai, guide karo"
-            };
-            userInput.value = prompts[type];
+        <div class="messages" id="messages">
+            <div class="message bot-msg">
+                <div class="bubble">
+                    <strong>✨ Assalamu Alaikum! ✨</strong><br><br>
+                    Main <strong style="color:#f5576c">MANO AI</strong> hoon — <strong>SARDAR RDX</strong> ki professional AI assistant! 🌟<br><br>
+                    ✅ Code commands banao<br>
+                    ✅ Style change karo<br>
+                    ✅ Debug help lo<br>
+                    ✅ Kuch bhi poocho<br><br>
+                    <strong>Batao, aaj main kya help kar sakti hoon? 🚀</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typing">
+            <span>MANO AI is thinking</span>
+            <div class="typing-dots">
+                <span>.</span><span>.</span><span>.</span>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <div class="input-wrapper">
+                <input type="text" id="userInput" placeholder="Kuch bhi poochho — command, code, style change..." onkeypress="handleEnter(event)">
+                <button onclick="sendMessage()">Send ➤</button>
+            </div>
+            <div class="shortcuts">
+                <span>⏎ Enter = Send</span>
+                <span>⇧ Shift+Enter = New Line</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const messagesDiv = document.getElementById('messages');
+    const userInput = document.getElementById('userInput');
+    const typingDiv = document.getElementById('typing');
+    
+    function setPrompt(type) {
+        const prompts = {
+            code: "Mujhe ek Discord bot command chahiye jo !play song naam se gaana chalaye",
+            style: "Mere bot ka theme change karna hai, dark mode with neon green color",
+            debug: "Mera code error de raha: console.log('hello' — missing closing bracket",
+            general: "AI assistant kaise banate hain? Simple guide do",
+            command: "Facebook bot ke liye !help command banao"
+        };
+        userInput.value = prompts[type];
+        sendMessage();
+    }
+    
+    function handleEnter(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
             sendMessage();
         }
+    }
+    
+    async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
         
-        function handleEnter(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
-            }
+        addMessage(message, 'user');
+        userInput.value = '';
+        
+        typingDiv.classList.add('active');
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        
+        try {
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: message })
+            });
+            
+            const data = await response.json();
+            typingDiv.classList.remove('active');
+            addMessage(data.reply, 'bot');
+        } catch (error) {
+            typingDiv.classList.remove('active');
+            addMessage("⚠️ Network error! Check your connection.", 'bot');
         }
         
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
-            
-            addMessage(message, 'user');
-            userInput.value = '';
-            
-            typingIndicator.classList.add('active');
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            
-            try {
-                const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question: message })
-                });
-                
-                const data = await response.json();
-                typingIndicator.classList.remove('active');
-                
-                if (data.success) {
-                    addMessage(data.reply, 'bot');
-                } else {
-                    addMessage("Error! Please try again. 🚀", 'bot');
-                }
-            } catch (error) {
-                typingIndicator.classList.remove('active');
-                addMessage("Network error! Check your connection. 🔌", 'bot');
-            }
-            
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-        
-        function addMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender === 'user' ? 'user-message' : 'bot-message'}`;
-            
-            // Format code blocks if present
-            let formattedText = text;
-            if (text.includes('```')) {
-                formattedText = text.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-            } else if (text.includes('`')) {
-                formattedText = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-            }
-            
-            messageDiv.innerHTML = `<div class="message-content">${formattedText.replace(/\n/g, '<br>')}</div>`;
-            messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-    </script>
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+    
+    function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
+        messageDiv.innerHTML = `<div class="bubble">${text.replace(/\\n/g, '<br>')}</div>`;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+</script>
 </body>
-</html>`);
+</html>
+  `);
 });
 
 // ============================================
-// 📡 API ENDPOINT
+// 📡 API ENDPOINTS
 // ============================================
 app.post("/chat", async (req, res) => {
-  const { question, message, q } = req.body;
-  const userQuestion = question || message || q;
+  const question = req.body.question || req.body.q || req.body.message;
   
-  if (!userQuestion) {
-    return res.status(400).json({ success: false, error: "Kuch toh likho!" });
+  if (!question) {
+    return res.json({ reply: "Kuch toh likho bhai! 🤲" });
   }
   
-  try {
-    const reply = await getAIResponse(userQuestion);
-    res.json({ success: true, reply: reply });
-  } catch (error) {
-    res.json({ success: false, reply: getFallbackReply() });
-  }
+  const reply = await getAIResponse(question);
+  res.json({ reply: reply });
 });
 
 app.get("/chat", async (req, res) => {
   const q = req.query.q;
-  if (!q) return res.json({ error: "Use /chat?q=your question" });
+  if (!q) {
+    return res.json({ error: "Use: /chat?q=Assalamu+Alaikum" });
+  }
   
   const reply = await getAIResponse(q);
-  res.json({ success: true, answer: reply });
+  res.json({ reply: reply });
 });
 
 app.get("/status", (req, res) => {
-  res.json({ status: "online", ai: "MANO AI", owner: "SARDAR RDX" });
+  res.json({
+    name: "MANO AI",
+    status: "online",
+    owner: "SARDAR RDX",
+    apiKeys: API_KEYS.length,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // ============================================
-// 🤖 AI FUNCTION
+// 🚀 START SERVER
 // ============================================
-async function getAIResponse(question) {
-  const fullPrompt = `${AI_SYSTEM}
-
-User: "${question}"
-
-MANO AI (2-3 lines mein professional reply):`;
-  
-  for (let i = 0; i < API_KEYS.length; i++) {
-    try {
-      const apiUrl = `https://api.kraza.qzz.io/ai/customai?q=${encodeURIComponent(fullPrompt)}&apikey=${API_KEYS[i]}`;
-      const response = await axios.get(apiUrl, { timeout: 10000 });
-      
-      if (response.data && response.data.status === true && response.data.response) {
-        let reply = response.data.response;
-        reply = reply.replace(/MANO AI:/gi, "").replace(/assistant:/gi, "").split('\n')[0].trim();
-        if (reply && reply.length > 5) return reply;
-      }
-    } catch(e) {}
-  }
-  
-  return getFallbackReply();
-}
-
-function getFallbackReply() {
-  const replies = [
-    "Main MANO AI hoon! Aapki kya madad kar sakti hoon? 🚀",
-    "Command chahiye? Batao kaunsa bot hai! 💻",
-    "Style change karna hai? Colors batao! 🎨",
-    "Code debug? Error screenshot bhejo! 🐛"
-  ];
-  return replies[Math.floor(Math.random() * replies.length)];
-}
-
 app.listen(PORT, () => {
-  console.log(`✅ MANO AI is live on port ${PORT}`);
-  console.log(`🌐 http://localhost:${PORT}`);
+  console.log(`✅ MANO AI is LIVE!`);
+  console.log(`🔑 Total API Keys: ${API_KEYS.length}`);
+  console.log(`🌐 Website: http://localhost:${PORT}`);
 });
