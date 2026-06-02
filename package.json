@@ -1,8 +1,5 @@
 {
   "name": "mano-ai",
-  "version": "1.0.0",
-  "description": "MANO AI - Professional AI Assistant by SARDAR RDX",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
@@ -10,8 +7,5 @@
     "express": "^4.18.2",
     "axios": "^1.6.0",
     "cors": "^2.8.5"
-  },
-  "keywords": ["ai", "assistant", "chatbot", "mano-ai"],
-  "author": "SARDAR RDX",
-  "license": "MIT"
+  }
 }
