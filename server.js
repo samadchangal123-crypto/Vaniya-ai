@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ============================================
-// 🔑 SARI API KEYS (10 keys)
+// 🔑 SARI API KEYS
 // ============================================
 const API_KEYS = [
   'csk-fhyxhr6dxx9twymw543nkjr3x6ynwvj8r8phtvpxwdnkp5cx',
@@ -26,22 +26,36 @@ const API_KEYS = [
 ];
 
 // ============================================
-// 💖 SEHZADI KA SYSTEM PROMPT
+// 👸 AI PERSONALITY (MANO AI Style)
 // ============================================
-const SEHZADI_SYSTEM = `Tum Sehzadi ho. Ek nek Muslim ladki.
-Tera kaam: Allah ka zikar karna, Quran ki aayat share karna, Nabi ﷺ ki hadith batana.
-IMPORTANT: Sirf 1-2 line mein reply dena. Islamic tone mein. Bilkul natural AI jaisa.`;
+const AI_SYSTEM = `Tu MANO AI hai - SARDAR RDX ki professional AI assistant.
+Tera kaam:
+- Code commands banana
+- Style change karna
+- Code debug karna
+- General questions answer karna
+
+Rules:
+- Sirf 2-3 lines mein reply de
+- Professional tone mein
+- Helpful aur friendly
+- Code blocks use kar sakti hai
+
+Examples:
+User: "command banao" → "Ye lo aapka command: !play [song name]"
+User: "style change" → "Style updated! Konsa color chahiye?"
+User: "debug" → "Error line 15 mein hai, ye fix karo:"`;
 
 // ============================================
-// 🌐 CHAT WEBSITE UI
+// 🌐 PROFESSIONAL WEBSITE UI
 // ============================================
 app.get("/", (req, res) => {
   res.send(`<!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sehzadi AI - Islamic Chatbot</title>
+    <title>MANO AI - Professional Assistant</title>
     <style>
         * {
             margin: 0;
@@ -50,8 +64,8 @@ app.get("/", (req, res) => {
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -59,64 +73,141 @@ app.get("/", (req, res) => {
             padding: 20px;
         }
         
-        .chat-container {
+        .app-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1200px;
             height: 95vh;
-            background: #fef9e8;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: #0f0f1e;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            display: flex;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(30, 30, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
         
-        .header {
-            background: linear-gradient(135deg, #00695c, #004d40);
-            color: white;
-            padding: 20px;
+        .logo {
             text-align: center;
+            margin-bottom: 30px;
         }
         
-        .header h1 {
+        .logo h2 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             font-size: 28px;
-            margin-bottom: 5px;
+        }
+        
+        .status {
             display: flex;
             align-items: center;
+            gap: 8px;
             justify-content: center;
-            gap: 10px;
+            margin-top: 5px;
+            color: #4caf50;
+            font-size: 12px;
         }
         
         .status-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 8px;
+            height: 8px;
             background: #4caf50;
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .features {
+            flex: 1;
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #ccc;
+        }
+        
+        .feature-item:hover {
+            background: rgba(102,126,234,0.3);
+            transform: translateX(5px);
+        }
+        
+        .feature-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .owner-info {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+        
+        /* Main Chat Area */
+        .main-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #1a1a2e;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .chat-header h3 {
+            color: white;
+            margin-bottom: 5px;
+        }
+        
+        .chat-header p {
+            color: #888;
+            font-size: 12px;
         }
         
         .messages {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            background: #f5f5dc;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         
         .message {
-            margin-bottom: 15px;
             display: flex;
-            animation: fadeIn 0.3s ease;
+            animation: slideIn 0.3s ease;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .user-message {
@@ -128,138 +219,196 @@ app.get("/", (req, res) => {
         }
         
         .message-content {
-            max-width: 75%;
+            max-width: 70%;
             padding: 12px 18px;
-            border-radius: 20px;
+            border-radius: 18px;
             word-wrap: break-word;
-            line-height: 1.4;
+            line-height: 1.5;
         }
         
         .user-message .message-content {
-            background: linear-gradient(135deg, #00695c, #004d40);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            border-bottom-right-radius: 5px;
+            border-bottom-right-radius: 4px;
         }
         
         .bot-message .message-content {
-            background: white;
-            color: #333;
-            border-bottom-left-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.1);
+            color: #e0e0e0;
+            border-bottom-left-radius: 4px;
         }
         
-        .input-area {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            gap: 10px;
+        .message-content pre {
+            background: #0f0f1e;
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 8px 0;
         }
         
-        input {
-            flex: 1;
-            padding: 12px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s;
-        }
-        
-        input:focus {
-            border-color: #00695c;
-        }
-        
-        button {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #00695c, #004d40);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,105,92,0.3);
+        .message-content code {
+            font-family: 'Courier New', monospace;
         }
         
         .typing-indicator {
             display: none;
             padding: 10px 20px;
-            color: #666;
-            font-style: italic;
-            align-items: center;
             gap: 10px;
+            align-items: center;
+            color: #888;
         }
         
         .typing-indicator.active {
             display: flex;
         }
         
-        .dot-floating {
+        .typing-dots {
             display: flex;
             gap: 4px;
         }
         
-        .dot-floating span {
-            width: 8px;
-            height: 8px;
-            background: #00695c;
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: #667eea;
             border-radius: 50%;
-            animation: float 1.4s infinite ease-in-out;
+            animation: bounce 1.4s infinite;
         }
         
-        .dot-floating span:nth-child(1) { animation-delay: 0s; }
-        .dot-floating span:nth-child(2) { animation-delay: 0.2s; }
-        .dot-floating span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes float {
+        @keyframes bounce {
             0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
+            30% { transform: translateY(-8px); }
         }
         
-        @media (max-width: 600px) {
+        .input-area {
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 25px;
+            padding: 5px;
+        }
+        
+        .input-wrapper input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 18px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .input-wrapper input::placeholder {
+            color: #666;
+        }
+        
+        .input-wrapper button {
+            padding: 8px 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .input-wrapper button:hover {
+            transform: scale(1.05);
+        }
+        
+        .shortcuts {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 0 10px;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
             .message-content {
                 max-width: 85%;
-                font-size: 14px;
             }
-            .header h1 { font-size: 22px; }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="header">
-            <h1>
-                <span class="status-dot"></span>
-                Sehzadi AI
-            </h1>
-            <p>🤲 Ek Nek Muslim Ladki - Allah Ka Zikar | Quran | Hadith 🤲</p>
-        </div>
-        
-        <div class="messages" id="messages">
-            <div class="message bot-message">
-                <div class="message-content">
-                    Assalamu Alaikum! 🤲<br>
-                    Main Sehzadi hoon. Allah ka zikar karo, main guide karungi. Koi bhi Islamic sawaal poocho?
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h2>⚡ MANO AI</h2>
+                <div class="status">
+                    <span class="status-dot"></span>
+                    <span>Online · Female AI Assistant</span>
                 </div>
             </div>
-        </div>
-        
-        <div class="typing-indicator" id="typingIndicator">
-            <span>Sehzadi soch rahi hai</span>
-            <div class="dot-floating">
-                <span>.</span><span>.</span><span>.</span>
+            
+            <div class="features">
+                <div class="feature-item" onclick="setPrompt('command')">
+                    💻 Code Generator
+                </div>
+                <div class="feature-item" onclick="setPrompt('style')">
+                    🎨 Style Changer
+                </div>
+                <div class="feature-item" onclick="setPrompt('debug')">
+                    🐛 Debug Helper
+                </div>
+                <div class="feature-item" onclick="setPrompt('general')">
+                    💬 General Assistant
+                </div>
+            </div>
+            
+            <div class="owner-info">
+                <div>👑 Owner: SARDAR RDX</div>
+                <div style="font-size: 10px; margin-top: 5px;">Version 2.0 | Powered by AI</div>
             </div>
         </div>
         
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Apna sawaal likhiye..." onkeypress="handleEnter(event)">
-            <button onclick="sendMessage()">📤 Bhejein</button>
+        <!-- Main Chat -->
+        <div class="main-chat">
+            <div class="chat-header">
+                <h3>🤖 MANO AI Assistant</h3>
+                <p>Your expert AI assistant for commands, code & everything!</p>
+            </div>
+            
+            <div class="messages" id="messages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        <strong>Assalamu Alaikum wa Rahmatullahi wa Barakatuh! 🌹</strong><br><br>
+                        Main <strong>MANO AI</strong> hoon — <strong>SARDAR RDX</strong> ki taraf se aapki expert AI assistant! 🌟<br><br>
+                        Aap mujhse kuch bhi pooch sakti/sakte hain — command banwana ho, style change karwani ho, code debug karna ho, ya koi bhi general sawal ho — main hamesha help karne ke liye yahan hoon! 🚀<br><br>
+                        Batao, aaj main aapki kya madad kar sakti hoon? 🚀
+                    </div>
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <span>MANO AI is thinking</span>
+                <div class="typing-dots">
+                    <span>.</span><span>.</span><span>.</span>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <input type="text" id="userInput" placeholder="Kuch bhi poochho — command edit, style change, code..." onkeypress="handleEnter(event)">
+                    <button onclick="sendMessage()">Send ➤</button>
+                </div>
+                <div class="shortcuts">
+                    <span>⏎ Enter = Send</span>
+                    <span>⇧ Shift+Enter = new line</span>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -268,8 +417,20 @@ app.get("/", (req, res) => {
         const userInput = document.getElementById('userInput');
         const typingIndicator = document.getElementById('typingIndicator');
         
+        function setPrompt(type) {
+            const prompts = {
+                command: "Mujhe ek Facebook bot command chahiye jo !play song naam se gaana chala sake",
+                style: "Mere bot ka style change karna hai, dark theme with purple gradient",
+                debug: "Mera code error de raha hai, help karo: console.log('hello'",
+                general: "Mujhe ek AI assistant banana hai, guide karo"
+            };
+            userInput.value = prompts[type];
+            sendMessage();
+        }
+        
         function handleEnter(event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
                 sendMessage();
             }
         }
@@ -297,11 +458,11 @@ app.get("/", (req, res) => {
                 if (data.success) {
                     addMessage(data.reply, 'bot');
                 } else {
-                    addMessage('Allah behtareen hai. 🤲', 'bot');
+                    addMessage("Error! Please try again. 🚀", 'bot');
                 }
             } catch (error) {
                 typingIndicator.classList.remove('active');
-                addMessage('⚠️ Internet check karo!', 'bot');
+                addMessage("Network error! Check your connection. 🔌", 'bot');
             }
             
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -309,8 +470,17 @@ app.get("/", (req, res) => {
         
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = \`message \${sender === 'user' ? 'user-message' : 'bot-message'}\`;
-            messageDiv.innerHTML = \`<div class="message-content">\${text}</div>\`;
+            messageDiv.className = `message ${sender === 'user' ? 'user-message' : 'bot-message'}`;
+            
+            // Format code blocks if present
+            let formattedText = text;
+            if (text.includes('```')) {
+                formattedText = text.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            } else if (text.includes('`')) {
+                formattedText = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+            }
+            
+            messageDiv.innerHTML = `<div class="message-content">${formattedText.replace(/\n/g, '<br>')}</div>`;
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
@@ -320,92 +490,57 @@ app.get("/", (req, res) => {
 });
 
 // ============================================
-// 📡 API ENDPOINTS
+// 📡 API ENDPOINT
 // ============================================
 app.post("/chat", async (req, res) => {
   const { question, message, q } = req.body;
   const userQuestion = question || message || q;
   
   if (!userQuestion) {
-    return res.status(400).json({
-      success: false,
-      error: "Kuch toh likho!"
-    });
+    return res.status(400).json({ success: false, error: "Kuch toh likho!" });
   }
   
   try {
-    const reply = await getSehzadiReply(userQuestion);
-    res.json({
-      success: true,
-      reply: reply,
-      from: "Sehzadi AI"
-    });
+    const reply = await getAIResponse(userQuestion);
+    res.json({ success: true, reply: reply });
   } catch (error) {
-    res.json({
-      success: false,
-      reply: getFallbackReply()
-    });
+    res.json({ success: false, reply: getFallbackReply() });
   }
 });
 
 app.get("/chat", async (req, res) => {
   const q = req.query.q;
-  if (!q) {
-    return res.json({ error: "Use: /chat?q=Assalamu+Alaikum" });
-  }
+  if (!q) return res.json({ error: "Use /chat?q=your question" });
   
-  const reply = await getSehzadiReply(q);
+  const reply = await getAIResponse(q);
   res.json({ success: true, answer: reply });
 });
 
 app.get("/status", (req, res) => {
-  res.json({
-    status: "online",
-    sehzadi: "active",
-    apiKeys: API_KEYS.length,
-    timestamp: new Date().toISOString()
-  });
+  res.json({ status: "online", ai: "MANO AI", owner: "SARDAR RDX" });
 });
 
 // ============================================
-// 🤖 AI REPLY FUNCTION
+// 🤖 AI FUNCTION
 // ============================================
-async function getSehzadiReply(question) {
-  const fullPrompt = `${SEHZADI_SYSTEM}
-  
-User ne kaha: "${question}"
+async function getAIResponse(question) {
+  const fullPrompt = `${AI_SYSTEM}
 
-Sehzadi ka 1-2 line mein Islamic jawab:`;
+User: "${question}"
+
+MANO AI (2-3 lines mein professional reply):`;
   
-  // Try all API keys
   for (let i = 0; i < API_KEYS.length; i++) {
-    const apiKey = API_KEYS[i];
-    if (!apiKey) continue;
-    
     try {
-      const apiUrl = `https://api.kraza.qzz.io/ai/customai?q=${encodeURIComponent(fullPrompt)}&apikey=${apiKey}`;
-      
-      const response = await axios.get(apiUrl, { 
-        timeout: 10000,
-        headers: { 'Accept': 'application/json' }
-      });
+      const apiUrl = `https://api.kraza.qzz.io/ai/customai?q=${encodeURIComponent(fullPrompt)}&apikey=${API_KEYS[i]}`;
+      const response = await axios.get(apiUrl, { timeout: 10000 });
       
       if (response.data && response.data.status === true && response.data.response) {
         let reply = response.data.response;
-        reply = reply
-          .replace(/Sehzadi:/gi, "")
-          .replace(/sehzadi:/gi, "")
-          .replace(/Aliya:/gi, "")
-          .split('\n')[0]
-          .trim();
-        
-        if (reply && reply.length > 5 && reply.length < 300) {
-          return reply;
-        }
+        reply = reply.replace(/MANO AI:/gi, "").replace(/assistant:/gi, "").split('\n')[0].trim();
+        if (reply && reply.length > 5) return reply;
       }
-    } catch (error) {
-      console.log(`❌ API key ${i+1} failed: ${error.message}`);
-    }
+    } catch(e) {}
   }
   
   return getFallbackReply();
@@ -413,30 +548,15 @@ Sehzadi ka 1-2 line mein Islamic jawab:`;
 
 function getFallbackReply() {
   const replies = [
-    "Assalamu Alaikum! Allah aapko khush rakhe. 🤲",
-    "SubhanAllah! Allah humein hidayat de. 🤲",
-    "Alhamdulillah! Quran padho, Allah ki rehmat milegi. 📖",
-    "MashaAllah! Nabi ﷺ ki sunnat par chalo. 💚",
-    "InshaAllah! Allah se dua karo, wo sunta hai. 🤲",
-    "Astaghfirullah! Allah maaf karne wala hai. 💚",
-    "Jannat ki fikr karo, dunya fani hai. 🌸",
-    "Allah ka zikar kro, dil sukoon paega. 💙",
-    "Namaz ka waqt ho gaya, Allah ko yaad kro. 🕌",
-    "Dua karo, Allah behtareen plan banata hai. 🤲"
+    "Main MANO AI hoon! Aapki kya madad kar sakti hoon? 🚀",
+    "Command chahiye? Batao kaunsa bot hai! 💻",
+    "Style change karna hai? Colors batao! 🎨",
+    "Code debug? Error screenshot bhejo! 🐛"
   ];
   return replies[Math.floor(Math.random() * replies.length)];
 }
 
-// ============================================
-// 🚀 START SERVER
-// ============================================
 app.listen(PORT, () => {
-  console.log(`✅ Sehzadi AI is live!`);
-  console.log(`🌐 Website: http://localhost:${PORT}`);
-  console.log(`🔑 Total API keys: ${API_KEYS.length}`);
+  console.log(`✅ MANO AI is live on port ${PORT}`);
+  console.log(`🌐 http://localhost:${PORT}`);
 });
-EOF
-
-# Restart the server
-pkill node
-node server.js &2
